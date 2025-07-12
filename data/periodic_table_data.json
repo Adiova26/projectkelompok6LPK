@@ -1,0 +1,33 @@
+import streamlit as st
+import json
+from quiz import start_quiz
+
+# Load data elemen
+with open('data/periodic_table_data.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)['elements']  # jika JSON punya key 'elements'
+
+st.set_page_config(page_title="Tabel Periodik Interaktif", layout="wide")
+st.title("🧪 Tabel Periodik Interaktif")
+
+menu = st.sidebar.radio("Menu", ["Tabel Periodik", "Kuis"])
+
+if menu == "Tabel Periodik":
+    st.subheader("Pilih Kategori Elemen:")
+    categories = sorted(set([el.get('category', 'Unknown') for el in data]))
+    kategori = st.selectbox("Kategori", categories)
+
+    filtered = [el for el in data if el.get('category') == kategori]
+
+    for el in filtered:
+        with st.expander(f"{el['symbol']} — {el['name']}"):
+            st.markdown(f"""
+**Nomor Atom:** {el.get('number', '–')}  
+**Massa Atom:** {el.get('atomic_mass', '–')}  
+**Kategori:** {el.get('category', '–')}  
+**Elektronegativitas:** {el.get('electronegativity_pauling', '–')}  
+**Konfigurasi Elektron:** {el.get('electron_configuration', '–')}  
+**Ringkasan:** {el.get('summary', '')[:200]}...
+""")
+
+elif menu == "Kuis":
+    start_quiz(data)
